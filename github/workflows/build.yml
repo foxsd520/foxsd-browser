@@ -37,9 +37,9 @@ jobs:
           zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app-release-aligned.apk
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: foxsd-apk
-          path: |
-            app/build/outputs/apk/release/app-release-*.apk
-            app-release-aligned.apk
+  uses: actions/upload-artifact@v4
+  with:
+    name: foxsd-apk
+    path: |
+      app/build/outputs/apk/release/*.apk
+      app-release-aligned.apk
