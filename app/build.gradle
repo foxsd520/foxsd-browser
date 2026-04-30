@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.myapplication'
+    namespace 'com.foxsd.browser'
     compileSdk 33
     buildToolsVersion "33.0.3"
 
@@ -15,8 +15,8 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-        
-        vectorDrawables { 
+
+        vectorDrawables {
             useSupportLibrary true
         }
     }
@@ -35,15 +35,5 @@ android {
 
     buildFeatures {
         viewBinding true
-        
     }
-    
-}
-
-dependencies {
-
-
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.google.android.material:material:1.9.0")
 }
