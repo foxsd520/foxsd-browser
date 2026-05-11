@@ -1,0 +1,10 @@
+import React, {useEffect, useState} from 'react';
+import {FlatList, View} from 'react-native';
+import {TextInput, Button, Text} from 'react-native-paper';
+import {addDoc, collection, onSnapshot, orderBy, query, serverTimestamp} from 'firebase/firestore';
+import {db} from '../services/firebase';
+import {useAuth} from '../context/AuthContext';
+export const ChatScreen = () => {const [messages,setMessages]=useState<any[]>([]); const [text,setText]=useState(''); const {user}=useAuth();
+useEffect(()=>onSnapshot(query(collection(db,'chat'), orderBy('createdAt','desc')), s=>setMessages(s.docs.map(d=>d.data()))),[]);
+const send=async()=>{ if(!text.trim()) return; await addDoc(collection(db,'chat'),{text,user:user?.displayName,email:user?.email,createdAt:serverTimestamp()}); setText('');};
+return <View style={{flex:1,padding:12}}><FlatList inverted data={messages} renderItem={({item})=><Text>{item.user}: {item.text}</Text>}/><TextInput value={text} onChangeText={setText}/><Button onPress={send}>Send</Button></View>;};

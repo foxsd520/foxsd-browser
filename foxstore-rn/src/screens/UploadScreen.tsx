@@ -1,0 +1,14 @@
+import React, {useState} from 'react';
+import {View, Image} from 'react-native';
+import {Button, TextInput} from 'react-native-paper';
+import DocumentPicker from 'react-native-document-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {addDoc, collection, serverTimestamp} from 'firebase/firestore';
+import {db, storage} from '../services/firebase';
+import {useAuth} from '../context/AuthContext';
+export const UploadScreen = () => { const [name,setName]=useState(''); const [description,setDescription]=useState(''); const [image,setImage]=useState<any>(null); const [file,setFile]=useState<any>(null); const {user}=useAuth();
+const pickApk=async()=>setFile(await DocumentPicker.pickSingle({type:[DocumentPicker.types.allFiles]}));
+const pickImage=async()=>{const r=await launchImageLibrary({mediaType:'photo'}); setImage(r.assets?.[0]);};
+const submit=async()=>{ if(!user||!file||!image) return; const fref=ref(storage,`apps/${Date.now()}-${file.name}`); const iref=ref(storage,`images/${Date.now()}-${image.fileName}`); await uploadBytes(fref,{uri:file.uri} as any); await uploadBytes(iref,{uri:image.uri} as any); const apkUrl=await getDownloadURL(fref); const imageUrl=await getDownloadURL(iref); await addDoc(collection(db,'apps'),{name,description,imageUrl,apkUrl,ownerName:user.displayName,ownerEmail:user.email,rating:0,status:'pending',downloads:0,createdAt:serverTimestamp()});};
+return <View style={{padding:12}}><TextInput label='App Name' value={name} onChangeText={setName}/><TextInput label='Description' value={description} onChangeText={setDescription}/><Button onPress={pickApk}>Choose APK/AAB</Button><Button onPress={pickImage}>Choose image</Button>{image&&<Image source={{uri:image.uri}} style={{height:120}}/>}<Button mode='contained' onPress={submit}>Upload</Button></View>;};

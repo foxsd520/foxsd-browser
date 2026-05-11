@@ -1,0 +1,10 @@
+import React, {useEffect, useState} from 'react';
+import {FlatList, View, Image} from 'react-native';
+import {Card, Text, Button} from 'react-native-paper';
+import {collection, onSnapshot, query, where, doc, updateDoc, increment} from 'firebase/firestore';
+import {db} from '../services/firebase';
+import {AppItem} from '../types';
+export const HomeScreen = () => { const [apps, setApps] = useState<AppItem[]>([]);
+useEffect(()=> onSnapshot(query(collection(db,'apps'), where('status','==','approved')), s=>setApps(s.docs.map(d=>({id:d.id,...d.data()} as AppItem)))),[]);
+const rate = async (id:string) => updateDoc(doc(db,'apps',id), {rating: increment(1)});
+return <FlatList data={apps} numColumns={2} keyExtractor={i=>i.id} renderItem={({item})=><Card style={{flex:1,margin:8}}><Image source={{uri:item.imageUrl}} style={{height:120}}/><Card.Content><Text>{item.name}</Text><Text>{item.description}</Text><Text>By {item.ownerName}</Text><Button onPress={()=>rate(item.id)}>⭐ {item.rating}</Button></Card.Content></Card>} />; };
