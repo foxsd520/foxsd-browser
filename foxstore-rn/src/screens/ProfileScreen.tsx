@@ -1,0 +1,10 @@
+import React, {useEffect, useState} from 'react';
+import {View} from 'react-native';
+import {Avatar, Text} from 'react-native-paper';
+import {useAuth} from '../context/AuthContext';
+import {collection, onSnapshot, query, where} from 'firebase/firestore';
+import {db} from '../services/firebase';
+export const ProfileScreen = () => { const {user} = useAuth(); const [count,setCount]=useState(0);
+useEffect(()=> user? onSnapshot(query(collection(db,'apps'), where('ownerEmail','==',user.email)), s=>setCount(s.size)):undefined,[user]);
+if(!user) return null;
+return <View style={{padding:16}}><Avatar.Image size={72} source={{uri:user.photoURL||''}}/><Text>{user.displayName}</Text><Text>{user.email}</Text><Text>{user.uid}</Text><Text>Uploaded apps: {count}</Text></View>;};
